@@ -6,9 +6,8 @@ SoftwareSerial accRight (5,6);
 DFRobot_WT61PC sensorLeft(&accLeft);
 DFRobot_WT61PC sensorRight(&accRight);
 
-void setup ()
-{
-  Serial.begin(9600);
+void setup (){
+  Serial.begin(115200);
   accLeft.begin(9600);
   accRight.begin(9600);
 
@@ -16,18 +15,19 @@ void setup ()
   sensorRight.modifyFrequency(FREQUENCY_0_1HZ);
 }
 
-void loop()
-{
-  if (sensorLeft.available()){
-    Serial.print("Acc\t"); Serial.print(sensorLeft.Acc.X); Serial.print("\t"); Serial.print(sensorLeft.Acc.Y); Serial.print("\t"); Serial.print(sensorLeft.Acc.Z); Serial.print("\n");
-    Serial.print("Gyro\t"); Serial.print(sensorLeft.Gyro.X); Serial.print("\t"); Serial.print(sensorLeft.Gyro.Y); Serial.print("\t"); Serial.print(sensorLeft.Gyro.Z); Serial.print("\n");
-    Serial.print("Angle\t"); Serial.print(sensorLeft.Angle.X); Serial.print("\t"); Serial.print(sensorLeft.Angle.Y); Serial.print("\t"); Serial.print(sensorLeft.Angle.Z); Serial.print("\n");
-    Serial.print("\n");
-
-    Serial.print("Acc\t"); Serial.print(sensorRight.Acc.X); Serial.print("\t"); Serial.print(sensorRight.Acc.Y); Serial.print("\t"); Serial.print(sensorRight.Acc.Z); Serial.print("\n");
-    Serial.print("Gyro\t"); Serial.print(sensorRight.Gyro.X); Serial.print("\t"); Serial.print(sensorRight.Gyro.Y); Serial.print("\t"); Serial.print(sensorRight.Gyro.Z); Serial.print("\n");
-    Serial.print("Angle\t"); Serial.print(sensorRight.Angle.X); Serial.print("\t"); Serial.print(sensorRight.Angle.Y); Serial.print("\t"); Serial.print(sensorRight.Angle.Z); Serial.print("\n");
-    Serial.print("\n");
-    
+void loop(){
+  if (sensorLeft.available() && sensorRight.available()){
+    sendData(sensorLeft, "Left");
+    sendData(sensorRight, "Right");
   }
+}
+
+void sendData(DFRobot_WT61PC sensorData, String ID){
+  unsigned long currentTime = millis();
+  Serial.print(currentTime);
+
+  Serial.print("Acc"+ID+"\t"); Serial.print(sensorData.Acc.X); Serial.print("\t"); Serial.print(sensorData.Acc.Y); Serial.print("\t"); Serial.print(sensorData.Acc.Z); Serial.print("\n");
+  Serial.print("Gyro"+ID+"\t"); Serial.print(sensorData.Gyro.X); Serial.print("\t"); Serial.print(sensorData.Gyro.Y); Serial.print("\t"); Serial.print(sensorData.Gyro.Z); Serial.print("\n");
+  Serial.print("Angle"+ID+"\t"); Serial.print(sensorData.Angle.X); Serial.print("\t"); Serial.print(sensorData.Angle.Y); Serial.print("\t"); Serial.print(sensorRight.Angle.Z); Serial.print("\n");
+  Serial.print("\n");
 }
