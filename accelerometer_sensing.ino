@@ -22,18 +22,16 @@ void setup (){
 
 void loop(){
   if (sensorLeft.available() && sensorRight.available()){
-    sendData(sensorLeft, "Left");
-    sendData(sensorRight, "Right");
+    sendData(sensorLeft, "left");
+    sendData(sensorRight, "right");
   }
 }
 
 // Log collected data with time
 void sendData(DFRobot_WT61PC sensorData, String ID){
   unsigned long currentTime = millis();
-  Serial.print(currentTime);
-
-  Serial.print("Acc"+ID+"\t"); Serial.print(sensorData.Acc.X); Serial.print("\t"); Serial.print(sensorData.Acc.Y); Serial.print("\t"); Serial.print(sensorData.Acc.Z); Serial.print("\n");
-  Serial.print("Gyro"+ID+"\t"); Serial.print(sensorData.Gyro.X); Serial.print("\t"); Serial.print(sensorData.Gyro.Y); Serial.print("\t"); Serial.print(sensorData.Gyro.Z); Serial.print("\n");
-  Serial.print("Angle"+ID+"\t"); Serial.print(sensorData.Angle.X); Serial.print("\t"); Serial.print(sensorData.Angle.Y); Serial.print("\t"); Serial.print(sensorRight.Angle.Z); Serial.print("\n");
-  Serial.print("\n");
+  Serial.println(currentTime);
+  Serial.println("Acc\t"+ID+"\t"+sensorData.Acc.X+"\t"+sensorData.Acc.Y+"\t"+sensorData.Acc.Z);
+  Serial.println("Gyro\t"+ID+"\t"+sensorData.Gyro.X+"\t"+sensorData.Gyro.Y+"\t"+sensorData.Gyro.Z);
+  Serial.println("Angle\t"+ID+"\t"+sensorData.Angle.X+"\t"+sensorData.Angle.Y+"\t"+sensorRight.Angle.Z);
 }
