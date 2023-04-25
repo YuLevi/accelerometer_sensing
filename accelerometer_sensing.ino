@@ -29,9 +29,8 @@ void loop(){
 
 // Log collected data with time
 void sendData(DFRobot_WT61PC sensorData, String ID){
-  unsigned long currentTime = millis();
-  Serial.println(currentTime);
-  Serial.println("Acc\t"+ID+"\t"+sensorData.Acc.X+"\t"+sensorData.Acc.Y+"\t"+sensorData.Acc.Z);
-  Serial.println("Gyro\t"+ID+"\t"+sensorData.Gyro.X+"\t"+sensorData.Gyro.Y+"\t"+sensorData.Gyro.Z);
-  Serial.println("Angle\t"+ID+"\t"+sensorData.Angle.X+"\t"+sensorData.Angle.Y+"\t"+sensorRight.Angle.Z);
+  Serial.println(String(millis())+"\t"+ID);
+  Serial.println("Acc\t"+String(sensorData.Acc.X)+"\t"+String(sensorData.Acc.Y)+"\t"+String(sensorData.Acc.Z));
+  Serial.println("Gyro\t"+String(sensorData.Gyro.X)+"\t"+String(sensorData.Gyro.Y)+"\t"+String(sensorData.Gyro.Z));
+  Serial.println("Angle\t"+String(sensorData.Angle.X)+"\t"+String(sensorData.Angle.Y)+"\t"+String(sensorRight.Angle.Z));
 }
