@@ -16,8 +16,8 @@ void setup (){
   accRight.begin(9600);
 
   // Set frequency of data acquisition
-  sensorLeft.modifyFrequency(FREQUENCY_10HZ);
-  sensorRight.modifyFrequency(FREQUENCY_10HZ);
+  sensorLeft.modifyFrequency(FREQUENCY_200HZ);
+  sensorRight.modifyFrequency(FREQUENCY_200HZ);
 }
 
 void loop(){
@@ -32,10 +32,10 @@ void loop(){
   }
 }
 
-// Log collected data with time
 void sendData(DFRobot_WT61PC sensorData, String ID){
-  Serial.println(String(millis())+"\t"+ID);
-  Serial.println("Acc\t"+String(sensorData.Acc.X)+"\t"+String(sensorData.Acc.Y)+"\t"+String(sensorData.Acc.Z));
-  Serial.println("Gyro\t"+String(sensorData.Gyro.X)+"\t"+String(sensorData.Gyro.Y)+"\t"+String(sensorData.Gyro.Z));
-  Serial.println("Angle\t"+String(sensorData.Angle.X)+"\t"+String(sensorData.Angle.Y)+"\t"+String(sensorData.Angle.Z));
+  Serial.print(ID+"\t"+String(millis())); // Log collected data with time and sensor ID
+  Serial.print("\t"+String(sensorData.Acc.X)+"\t"+String(sensorData.Acc.Y)+"\t"+String(sensorData.Acc.Z)); // Acceleration
+  Serial.print("\t"+String(sensorData.Gyro.X)+"\t"+String(sensorData.Gyro.Y)+"\t"+String(sensorData.Gyro.Z)); // Gryo
+  Serial.print("\t"+String(sensorData.Angle.X)+"\t"+String(sensorData.Angle.Y)+"\t"+String(sensorData.Angle.Z)); // Angle
+  Serial.print("\n");
 }
