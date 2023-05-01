@@ -1,7 +1,7 @@
 from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
-from serial_read import SerialHandler
 import numpy as np
+from math import ceil
 
 import matplotlib
 matplotlib.use('Qt5Agg')
@@ -11,16 +11,16 @@ class RealTimePlotter:
     A real-time 3D plotter for visualising stream data.
     """
 
-    def __init__(self, title=None, interval=100, sample_size=60, source=None, sensor_id=None, 
-                 ylim=((-20,20),(-1000,1000),(-180,180)), marker='-', color='b'):
+    def __init__(self, title=None, sample_size=60, source=None, sensor_id=None, 
+                 ylim=((-20,20),(-1000,1000),(-180,180)), data_file=None, marker='-', color='b'):
         self.title = title
-        self.interval = interval
         self.sample_size = sample_size
         self.source = source
         self.sensor_id = sensor_id
+        self.ylim = ylim
+        self.data_file = data_file
         self.marker = marker
         self.color = color
-        self.ylim = ylim
 
         self.fig = plt.figure(self.title, figsize=(12,7.5))
         self.fig.suptitle(self.title)
@@ -57,27 +57,25 @@ class RealTimePlotter:
 
     def animate(self, i):
         new_data = (self.source.read_data()[self.sensor_id])
-        Acc, Gyr, Ang = [float(x) for x in new_data[2:5]], [float(x) for x in new_data[5:8]], [float(x) for x in new_data[8:11]]
-        time = float(new_data[1])
+        if self.data_file: self.data_file.data_save(new_data)
+        Time, Acc, Gyr, Ang = float(new_data[1]), [float(x) for x in new_data[2:5]], [float(x) for x in new_data[5:8]], [float(x) for x in new_data[8:11]]
 
-        self.AccX, self.AccY, self.AccZ = [np.append(x, (time, Acc[i])) for i, x in enumerate([self.AccX, self.AccY, self.AccZ])]
-        self.GyrX, self.GyrY, self.GyrZ = [np.append(x, (time, Gyr[i])) for i, x in enumerate([self.GyrX, self.GyrY, self.GyrZ])]
-        self.AngX, self.AngY, self.AngZ = [np.append(x, (time, Ang[i])) for i, x in enumerate([self.AngX, self.AngY, self.AngZ])]
+        self.AccX, self.AccY, self.AccZ = [np.append(x, (Time, Acc[i])) for i, x in enumerate([self.AccX, self.AccY, self.AccZ])]
+        self.GyrX, self.GyrY, self.GyrZ = [np.append(x, (Time, Gyr[i])) for i, x in enumerate([self.GyrX, self.GyrY, self.GyrZ])]
+        self.AngX, self.AngY, self.AngZ = [np.append(x, (Time, Ang[i])) for i, x in enumerate([self.AngX, self.AngY, self.AngZ])]
 
         data_sets = [(self.AccX, self.line_AccX), (self.AccY, self.line_AccY), (self.AccZ, self.line_AccZ),
              (self.GyrX, self.line_GyrX), (self.GyrY, self.line_GyrY), (self.GyrZ, self.line_GyrZ),
              (self.AngX, self.line_AngX), (self.AngY, self.line_AngY), (self.AngZ, self.line_AngZ)]
 
-        for data, line in data_sets:
-            line.set_data(data[::2], data[1::2])
+        for data, line in data_sets: line.set_data(data[::2], data[1::2])
 
         for ax in self.ax.flatten():
-            if time >= ax.get_xlim()[1] - 1:
+            if Time >= ax.get_xlim()[1] - 1:
                 ax.set_xlim(ax.get_xlim()[1]-30, ax.get_xlim()[1] + self.sample_size)
                 self.fig.canvas.draw_idle()
 
             min_data, max_data = min(ax.get_lines()[0].get_ydata()), max((ax.get_lines()[0].get_ydata()))
-            
             if min_data < ax.get_ylim()[0] or max_data > ax.get_ylim()[1]:
                 ax.set_ylim((min_data // 10) * 10, (max_data // 10 + 1) * 10)
                 self.fig.canvas.draw_idle()
@@ -87,3 +85,15 @@ class RealTimePlotter:
     def start(self):
         self.ani = FuncAnimation(self.fig,self.animate,interval=50,blit=True)
         return self.ani
+
+    def on_close(self, event):
+        plt.figure(self.title)
+        if self.data_file:
+            self.data_file.close()
+            time_data = plt.gca().get_lines()[0].get_xdata()
+            for ax in self.ax.flatten(): ax.set_xlim(0, ceil(time_data[-1]))
+            self.fig.set_size_inches(20,12)
+            plt.savefig(self.data_file.image_save(), dpi=500)
+            print(f"{time_data.size} data points saved "
+                  f"({time_data[-1]}s worth of data) for sensor {self.sensor_id}")
+        plt.close('all')
