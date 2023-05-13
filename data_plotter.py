@@ -83,7 +83,7 @@ class RealTimePlotter:
         return self.line
 
     def start(self):
-        self.ani = FuncAnimation(self.fig,self.animate,interval=50,blit=True)
+        self.ani = FuncAnimation(self.fig,self.animate,interval=10,blit=True)
         return self.ani
 
     def on_close(self, event):
