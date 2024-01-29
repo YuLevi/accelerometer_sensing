@@ -1,4 +1,4 @@
-# BrumEco Accelerometer Sensing
+# Accelerometer Sensing
 
 This project is designed to collect and visualise real-time accelerometer data from multiple sensors. The project consists of two main components:
 
